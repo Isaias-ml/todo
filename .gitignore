@@ -102,3 +102,4 @@ ENV/
 
 .vscode/
 .idea/
+cEventos/db.sqlite3
