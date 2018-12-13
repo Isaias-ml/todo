@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from .forms import UserForm
 # Create your views here.
@@ -36,14 +37,13 @@ def user_login(request):
     return render(request, 'accounts/user_login.html')
 
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+        form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
-            messages.success(request, 'Senha alterada com sucesso!')
-            return redirect('accounts:change_password')
+            form.save()
+            update_session_auth_hash(request, form.user)
         else:
             messages.error(request, 'Nao foi possivel alterar sua senha!')
     else:
